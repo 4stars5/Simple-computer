@@ -1,0 +1,11 @@
+#include<stdio.h>
+int main()
+{
+	char str[]="3+4";
+	int a,b,ans;
+	a=str[0]-'0';
+	b=str[2]-'0';
+	ans=a+b;
+	printf("ans=%d\n",ans);
+	return 0;
+}
