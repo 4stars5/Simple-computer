@@ -1,0 +1,119 @@
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+int isOperator(char c)//判断c是否为操作符
+{
+    if(c=='+'||c=='-'||c=='*'||c=='/')
+    return 1;
+    else return 0;
+}
+void moveczf(char *p)//移动操作符 
+{
+	while(*p!='\0')
+	{
+		*p=*(p+1);
+		p++;
+	}
+}
+void moveczs(float *p,float *end)//移动操作数 
+{
+	while(p!=end)
+	{
+		*p=*(p+1);
+		p++;
+	}
+}
+int main()
+{
+	char str[100];
+	printf("please input a string, but only + - * / can be included:\n");
+	scanf("%s",str);
+	char czf[100]={'\0'};//czf意为操作符 
+	float czs[100];//czs意为操作数 
+	
+	//提取操作符+-*/
+	int czfxb=0;//操作符下标 
+	for(int i=0;i<strlen(str);i++)
+	{
+		if(isOperator(str[i]))
+		{  
+		    czf[czfxb]=str[i];//isOperator判断是否为操作符 
+		    czfxb++;
+	    }
+    }
+    
+	 //提取操作数1,2.5,4等
+	int czsxb=0;//操作数下标
+	for(int i=0;i<strlen(str);i++)
+	{
+	 	char temp[100]={'\0'};//临时接收操作数 
+	 	int tempxb=0;//临时操作数下标 
+	    while(!isOperator(str[i]))//i不是操作符 ,将操作数看作一个整体（如2.5)放入temp中
+		{
+		    temp[tempxb]=str[i];
+		    i++;
+		    tempxb++;
+	    }
+	    float ans1=atof(temp);//atof是指将字符串转化为float型 
+	    czs[czsxb++]=ans1;
+	}
+
+	//先算乘除法(poperator fh poperand sz)
+	char *fh=czf;//符号'*/' 
+	float *sz=czs;//数字 
+	float ans;
+	while(*fh!='\0')
+	{
+	  	if(*fh=='*')
+	  	{
+	  		float zczs=*sz;//左操作数 
+	  		float yczs=*(sz+1);//右操作数 
+	  		ans=zczs*yczs;
+	  		*sz=ans;
+			moveczf(fh);//移动操作符
+			moveczs(sz+1,&czs[czsxb--]);//移动操作数
+	    }
+		else if(*fh=='/')
+		{
+			float zczs=*sz;//左操作数 
+	  		float yczs=*(sz+1);//右操作数 
+	  		ans=zczs/yczs;
+	  		*sz=ans;
+			moveczf(fh);//移动操作符
+			moveczs(sz+1,&czs[czsxb--]);//移动操作数
+		}
+		else//遇见+-时跳过 
+		{
+			fh++;
+			sz++;
+		}
+	}
+	  
+	//处理+-
+	fh=czf;//符号'+-'
+	sz=czs;//数字 
+	while(*fh!='\0')
+	{
+	  	if(*fh=='+')
+	  	{
+	  		float zczs=*sz;//左操作数 
+	  		float yczs=*(sz+1);//右操作数 
+	  		float ans=zczs+yczs;
+	  		*sz=ans;
+			moveczf(fh);//移动操作符
+			moveczs(sz+1,&czs[czsxb]);//移动操作数
+			czsxb--; 
+	    }
+		else if(*fh=='-')
+		{
+			float zczs=*sz;//左操作数 
+	  		float yczs=*(sz+1);//右操作数 
+	  		float ans=zczs-yczs;
+	  		*sz=ans;
+			moveczf(fh);//移动操作符
+			moveczs(sz+1,&czs[czsxb--]);//移动操作数
+		}
+	}
+	printf("%0.2f\n",czs[0]);
+	return 0;
+}
